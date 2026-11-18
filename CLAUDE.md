@@ -10,7 +10,7 @@ Read `README.md` first, then `CoH-Blitzkrieg-desync-checklist.md`, which is the 
 | Where the game keeps logs, replays and maps; what a desync looks like; the test plan | `CoH-Blitzkrieg-desync-checklist.md` |
 | Which mod scripts can run non-deterministically | `CoH-Blitzkrieg-determinism-audit.md` |
 | Mod bugs, tunable settings, the squad-AI fix | `CoH-Blitzkrieg-mod-review.md` |
-| What happened in each test game so far | `findings/*.md` (newest: `game-20261113-2200.md`) |
+| What happened in each test game so far | `findings/*.md` (newest: `game-20261117-1917.md`) |
 | Collecting and comparing player reports | `tools/BK-collect/README.md` |
 | The FPU probe: install, logs, pin, build | `tools/fpu-probe/README.md` (295 lines, read by section) |
 
