@@ -34,8 +34,42 @@ The `warnings.<date>.txt` for the game fills with lines like:
 *** Squad command 45 sent from 1002 (Player C) but received by squad "sbps\races\axis\vehicles\halftrack_squad_kwk37" belonging to 1006 (CPU - Normal)
 ```
 
-The first such line marks the moment the simulations diverged. Clean games have none and end with
-`GameOverDialog - normal game ending (no sync errors)`.
+The first such line marks the moment the simulations diverged. A clean game has none, or only CPU-to-CPU and
+`(none)` lines that are identical on every PC (`findings\game-20261113-2200.md`). Every PC also logs the same
+`MOD -- Game Over at frame N`. Do not go by `GameOverDialog - normal game ending (no sync errors)`: the
+2026-11-17 desync ended with that line on all three PCs, and the game-over frames differed
+(`findings\game-20261117-1917.md`).
+
+### Which PC runs each CPU player
+
+Each CPU player's AI runs on one PC (station). The game hands CPUs out round-robin by station, in player-id order:
+the first CPU goes to station 1 (always the host), the next to station 2, and so on, wrapping back to station 1.
+There is no lobby setting for it. Seen in three games:
+
+- 2026-05-08, 2 PCs: 1004 on the host (PC-C), 1005 on PC-B. Each PC flagged the other PC's CPU.
+- 2026-11-07 18:40, 4 PCs: one CPU per PC (`findings\game-20261107-1840.md`).
+- 2026-11-17, 3 PCs: 1002 on station 3 (PC-B), confirmed by the end-of-game takeover. By the rule, 1000 and 1003
+  were on the host (PC-C) and 1001 on station 2 (PC-A).
+
+How to read it from a log:
+
+- Each PC's station number is in `registered local station [N]`, logged just before the mission starts.
+- A PC never flags commands from its own CPU. When a PC leaves, the others log `KillAllDropped ... Remote AI` for
+  the CPUs it ran.
+- `Type 1` / `Type 3` in `PopulateGameInfoInternal` only show which PC created the CPU slot (Type 1 on the host's
+  log, Type 3 on everyone else's). They do not show which PC runs that CPU.
+
+```powershell
+Get-ChildItem "$coh\LogFiles\warnings.*.txt" | Sort-Object LastWriteTime | Select-Object -Last 1 | Select-String -Pattern 'registered local station|KillAllDropped|AI Simulation for player' | ForEach-Object { $_.Line.Trim() }
+```
+
+To control it:
+
+- With one human PC, every CPU runs on that PC.
+- With one CPU, it runs on the host.
+- With fewer CPUs than PCs, the highest-numbered stations run none. After the host, stations are probably
+  numbered in the order players joined the lobby (not confirmed).
+- To put the only AI on a suspect PC, make that PC the host and add one CPU.
 
 Known desync game: `warnings.2026-02-13.15-51-46.txt` (4v4 with CPUs, first mismatch 16:33:46, host dropped 16:59:46).
 Clean games for comparison: 2026-02-15, 2026-02-17, 2026-04-03.
@@ -143,7 +177,7 @@ Get-ChildItem "$coh" -Recurse -File | Where-Object { $_.Attributes -band 0x40000
 
 The collector proves the setups match. It cannot run these tests. Status as of 2026-11-07: game and mod files
 match on all three PCs except Player B's `6p_RoadToCherbourg_rev2.sga` (fix with a Steam verify of Blitzkrieg). The
-2026-05-08 desync (Player C host running both CPUs, Player B, 8p Infantry OP) started about 31 minutes in, with
+2026-05-08 desync (Player C host running CPU 1004, Player B running CPU 1005, 8p Infantry OP) started about 31 minutes in, with
 identical data CRCs on both PCs.
 
 The 2026-11-07 evening desync (4 humans + 4 CPU, Infantry OP, Player B host) split by CPU vendor: the two Intel PCs
@@ -181,6 +215,17 @@ all four. Details and next tests: `findings\game-20261107-1840.md`.
 ```powershell
 Get-ChildItem "$([Environment]::GetFolderPath('MyDocuments'))\My Games\Company of Heroes Relaunch\LogFiles\warnings.*.txt" | Sort-Object LastWriteTime | Select-Object -Last 1 | Select-String -Pattern 'Max/Avg:' | Select-Object -Last 1 | ForEach-Object { $_.Line.Trim() }
 ```
+
+### Added 2026-11-17 after a pinned game desynced (`findings\game-20261117-1917.md`)
+
+With the FPU pin on and zero corrections, PC-B (Win 10) split from PC-A and PC-C (Win 11) about 57 min in. That
+rules out the x87/SSE settings of the sim thread. Next, test whether the AI a PC runs is involved (see "Which PC runs
+each CPU player" above):
+
+- [ ] **Game F: no CPUs.** The same three PCs, humans only, played past 60 minutes.
+- [ ] **Game G: one CPU on PC-B.** PC-B hosts, one CPU, so PC-B runs the only AI. Repeat with PC-C hosting.
+  If only the games where PC-B runs the AI split, the AI is involved. If both split, the PC is.
+- [ ] Save `playback\temp.rec` after each of these games.
 
 **After every test game**, desync or not: write down the date, map, host, CPU slots, length and result (command 1).
 Everyone who played runs BK-collect the same day, before the next launch overwrites `temp.rec`, and sends the
@@ -254,6 +299,6 @@ Get-ChildItem "$coh" -Recurse -Filter 'SyncError*' | Select-Object FullName, Len
 Not yet verified in a game that the switch is accepted by this build; the log line above is the check.
 
 Second question for them (added 2026-11-07): the module hands dropped players to the AI
-(`PlayerDropBehavior = aitakeover`), and the 2026-05-08 desync centred on two CPU players run by the host, on 8p
+(`PlayerDropBehavior = aitakeover`), and the 2026-05-08 desync centred on two CPU players, one run by each PC, on 8p
 Infantry OP, after 31 minutes. Are there known AI desyncs in 5.3.7 on 8-player maps or in long games, and is there
 a fix or a safe setting?

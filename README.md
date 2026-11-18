@@ -58,10 +58,12 @@ python -I tools/extract_text.py "C:\Program Files (x86)\Steam\steamapps\common\C
 ## Status (2026-11-17)
 
 - Files, CRCs, launch options (`-sync_high`) and the user folder (moved out of OneDrive) are lined up on all PCs.
-- fpu-probe 2.1 pinned the simulation thread's FPU settings on every tick. The game ran three clean long games in a row
-  with it, the longest 2 h 41 min, and never had to correct a tick. That does not yet prove the pin fixed it: an unpinned
-  control game is still needed (see [`findings/game-20261113-2200.md`](findings/game-20261113-2200.md)).
-- fpu-probe 2.2 adds tick timing, to tell a stalled simulation apart from a slow unit.
+- fpu-probe 2.1 pinned the simulation thread's FPU settings on every tick, and three long games in a row were clean.
+- **The pin does not fix it.** On 2026-11-17 a pinned game with zero corrections desynced about 57 min in: PC-B
+  (Win 10) split from PC-A and PC-C (Win 11), and every PC still showed "no sync errors"
+  ([`findings/game-20261117-1917.md`](findings/game-20261117-1917.md)).
+- Next: find out whether the CPU AI a PC runs is involved. The game hands CPUs to PCs round-robin. See "Which PC runs
+  each CPU player" and Games F and G in the checklist.
 
 ## Privacy
 

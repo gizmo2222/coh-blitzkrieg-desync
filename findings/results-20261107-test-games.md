@@ -6,15 +6,17 @@ log is 2 h ahead (CST). Earlier analysis: `compare-3PC-20261107.md`.
 
 ## Verdict
 
-Three games, no desync. The third ran 82 minutes in the same setup as the 05-08 desync: host Player C running
-four CPUs, with Player B as the remote human. It ended with "normal game ending (no sync errors)" on both PCs, with
+Three games, no desync. The third ran 82 minutes in the same setup as the 05-08 desync: host Player C, Player B as
+the remote human, and the CPUs split between the two PCs. It ended with "normal game ending (no sync errors)" on both PCs, with
 0 mismatch lines and no SyncError files. `-sync_high` works: every game started at sync level 1 with
 `SyncErrorChecking level to High`. The 05-08 game ran at level 0 / Low.
 
 ## Games
 
 Map for all three: Crossing Meuse Points Up. Team 0: Player C (id-C, host) and Player B (id-B). Team 1: four
-CPUs, Type 1 on PC-C and Type 3 on Player B, so the host ran them all.
+CPUs, Type 1 on PC-C and Type 3 on Player B. (Corrected 2026-11-17: this used to conclude that the host ran them
+all. The Type only shows which PC created the slot. CPUs go round-robin by station, so most likely the 1st and 3rd
+CPU ran on PC-C and the 2nd and 4th on PC-B. See "Which PC runs each CPU player" in the checklist.)
 
 | Start (PST) | Seed | Total CRC | Length | Result |
 |---|---|---|---|---|
