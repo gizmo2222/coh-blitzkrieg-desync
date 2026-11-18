@@ -1,0 +1,23 @@
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,2,0,0
+ PRODUCTVERSION 2,2,0,0
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_DLL
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904B0"
+    BEGIN
+      VALUE "FileDescription", "fpu-probe: version.dll proxy that logs and pins FPU settings for Company of Heroes"
+      VALUE "FileVersion", "2.2"
+      VALUE "ProductName", "fpu-probe"
+      VALUE "OriginalFilename", "version.dll"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1200
+  END
+END

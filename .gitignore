@@ -1,0 +1,15 @@
+# Raw player data: report zips, logs, replays. Never publish; anonymize into findings\ instead.
+reports/
+# Blitzkrieg mod files (the mod team's content). Recreate with: python -I tools/extract_text.py
+extracted/
+# Real-name key and pre-anonymization originals
+private/
+# Stale duplicate of tools\BK-collect
+/BK-collect/
+
+# Build outputs and packaged downloads (shipped as GitHub release assets)
+tools/fpu-probe/build/
+*.zip
+*.rec
+__pycache__/
+*.pyc
